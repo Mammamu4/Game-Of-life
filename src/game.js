@@ -93,11 +93,22 @@ resetButton.addEventListener("click", () => {
   clearGrid();
 });
 
+const randomValueSlider = document.getElementById("randomValueSlider");
+const randomValue = document.getElementById("randomValue");
+
+randomValueSlider.addEventListener("input", () => {
+  randomValue.value = randomValueSlider.value;
+});
+
+randomValue.addEventListener("input", () => {
+  randomValueSlider.value = randomValue.value;
+});
+
 const randomizeButton = document.getElementById("randomizeButton");
 randomizeButton.addEventListener("click", () => {
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      let val = document.getElementById("numberValue").value;
+      let val = document.getElementById("randomValueSlider").value;
       grid[row][col] = Math.random() < val ? 1 : 0;
     }
   }

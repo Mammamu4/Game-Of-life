@@ -11,6 +11,11 @@ canvas.height = rows * cellSize;
 
 const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
 
+grid[10][10] = 1;
+grid[11][10] = 1;
+grid[9][10] = 1;
+grid[10][11] = 1;
+
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let row = 0; row < rows; row++) {
@@ -32,8 +37,25 @@ drawGrid();
 function nextGeneration() {
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      let prob = 0.3;
-      grid[row][col] = Math.random() < prob ? 1 : 0;
+      let aliveNeighbours = 0;
+      for (let i = row - 1; i <= row + 1; i++) {
+        for (let j = col - 1; j <= col + 1; j++) {
+          if (
+            i >= 0 &&
+            i < rows &&
+            j >= 0 &&
+            j < cols &&
+            (i !== row || j !== col)
+          ) {
+            aliveNeighbours += grid[i][j];
+          }
+        }
+      }
+      if (aliveNeighbours > 0) {
+        console.log(
+          "Row:" + row + " Col" + col + " Alive Neighbours: " + aliveNeighbours,
+        );
+      }
     }
   }
   drawGrid();

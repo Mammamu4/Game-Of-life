@@ -9,7 +9,7 @@ const intervalTime = 100; //game will update every 100 ms
 canvas.width = cols * cellSize;
 canvas.height = rows * cellSize;
 
-const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+let grid = Array.from({ length: rows }, () => Array(cols).fill(0));
 
 grid[10][10] = 1;
 grid[11][10] = 1;
@@ -35,7 +35,9 @@ function drawGrid() {
 drawGrid();
 
 function nextGeneration() {
+  const newGrid = [];
   for (let row = 0; row < rows; row++) {
+    newGrid[row] = [];
     for (let col = 0; col < cols; col++) {
       let aliveNeighbours = 0;
       for (let i = row - 1; i <= row + 1; i++) {
@@ -51,13 +53,15 @@ function nextGeneration() {
           }
         }
       }
-      if (aliveNeighbours > 0) {
-        console.log(
-          "Row:" + row + " Col" + col + " Alive Neighbours: " + aliveNeighbours,
-        );
+      if (grid[row][col] === 1) {
+        newGrid[row][col] =
+          aliveNeighbours === 2 || aliveNeighbours === 3 ? 1 : 0;
+      } else {
+        newGrid[row][col] = aliveNeighbours === 3 ? 1 : 0;
       }
     }
   }
+  grid = newGrid;
   drawGrid();
 }
 
@@ -74,4 +78,14 @@ startButton.addEventListener("click", () => {
     intervalId = setInterval(nextGeneration, 100);
     startButton.textContent = "Stop";
   }
+});
+
+canvas.addEventListener("click", (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  console.log(x + " | " + y);
+  const row = Math.floor(y / cellSize);
+  const col = Math.floor(x / cellSize);
+  console.log("Row: " + row + " | " + "Col: " + col);
 });

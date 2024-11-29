@@ -8,10 +8,28 @@
     <link href="./output.css" rel="stylesheet" />
   </head>
   <body>
-    <div class="flex flex-col gap-4 my-10 items-center">
-      <div class="flex gap-4 items-center">
-        <h1>Game Of Life</h1>
-        <button id="startButton" class="border-2 m-0 px-2 rounded-md">Start</button>
+    <div class="flex flex-col items-center">
+      <div class="flex items-center gap-2 my-2">
+        <button
+          id="startButton"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+        >
+          Start
+        </button>
+        <button
+          id="resetButton"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+        >
+          Reset
+        </button>
+        <button
+          id="randomizeButton"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+        >
+          Randomize
+        </button>
+        <label for="numberValue">Randomize Value</label>
+        <input id="numberValue" type="number" name="randomValue" value="0.5" class="border-2" step="0.05" min="0" max="1" />
       </div>
       <canvas id="gridCavas" class="w-1/2"></canvas>
     </div>

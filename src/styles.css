@@ -19,7 +19,6 @@
 
 html {
   scroll-behavior: smooth;
-  color: rgb(var(--text));
 }
 
 @tailwind base;

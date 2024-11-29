@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 
 const rows = 50;
 const cols = 50;
-const cellSize = 10;
+const cellSize = 20;
 const intervalTime = 100; //game will update every 100 ms
 
 canvas.width = cols * cellSize;
@@ -65,10 +65,18 @@ function nextGeneration() {
   drawGrid();
 }
 
+function clearGrid() {
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      grid[i][j] = 0;
+    }
+  }
+  drawGrid();
+}
+
 let intervalId;
 
 const startButton = document.getElementById("startButton");
-console.log(startButton);
 startButton.addEventListener("click", () => {
   if (intervalId) {
     clearInterval(intervalId);
@@ -80,12 +88,61 @@ startButton.addEventListener("click", () => {
   }
 });
 
-canvas.addEventListener("click", (event) => {
+const resetButton = document.getElementById("resetButton");
+resetButton.addEventListener("click", () => {
+  clearGrid();
+});
+
+const randomizeButton = document.getElementById("randomizeButton");
+randomizeButton.addEventListener("click", () => {
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      let val = document.getElementById("numberValue").value;
+      grid[row][col] = Math.random() < val ? 1 : 0;
+    }
+  }
+  drawGrid();
+});
+
+let isMouseDown = false; // Track if the mouse is down
+
+canvas.addEventListener("mousedown", (event) => {
+  isMouseDown = true;
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  console.log(x + " | " + y);
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (event.clientX - rect.left) * scaleX;
+  const y = (event.clientY - rect.top) * scaleY;
+
   const row = Math.floor(y / cellSize);
   const col = Math.floor(x / cellSize);
-  console.log("Row: " + row + " | " + "Col: " + col);
+  if (row >= 0 && row < rows && col >= 0 && col < cols) {
+    grid[row][col] = grid[row][col] ? 0 : 1;
+    drawGrid();
+  }
+});
+
+canvas.addEventListener("mousemove", (event) => {
+  if (isMouseDown) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width; // Scale factor for x coordinates
+    const scaleY = canvas.height / rect.height; // Scale factor for y coordinates
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+
+    const row = Math.floor(y / cellSize);
+    const col = Math.floor(x / cellSize);
+    if (row >= 0 && row < rows && col >= 0 && col < cols) {
+      grid[row][col] = 1;
+      drawGrid();
+    }
+  }
+});
+
+canvas.addEventListener("mouseup", () => {
+  isMouseDown = false;
+});
+
+canvas.addEventListener("mouseleave", () => {
+  isMouseDown = false;
 });

@@ -4,16 +4,23 @@ const ctx = canvas.getContext("2d");
 const cellSize = 50;
 const rows = 50;
 const cols = 100;
-const intervalTime = 10; //game will update every 100 ms
+let intervalTime = 10; //game will update every 100 ms
 
 const root = document.documentElement;
-const primaryColor = getComputedStyle(root).getPropertyValue('--primary').trim();
-console.log('Primary Color:', primaryColor);
+const primaryColor = getComputedStyle(root)
+  .getPropertyValue("--primary")
+  .trim();
 
 canvas.width = cols * cellSize;
 canvas.height = rows * cellSize;
 
 let grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+grid[25][50] = 1;
+grid[26][50] = 1;
+grid[26][49] = 1;
+grid[27][50] = 1;
+grid[27][51] = 1;
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -58,19 +65,15 @@ function nextGeneration() {
     newGrid[row] = [];
     for (let col = 0; col < cols; col++) {
       let aliveNeighbours = 0;
-      for (let i = row - 1; i <= row + 1; i++) {
-        for (let j = col - 1; j <= col + 1; j++) {
-          if (
-            i >= 0 &&
-            i < rows &&
-            j >= 0 &&
-            j < cols &&
-            (i !== row || j !== col)
-          ) {
-            aliveNeighbours += grid[i][j];
-          }
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          if (i === 0 && j === 0) continue; // Skip the current cell
+          const neighbourRow = (row + i + rows) % rows; // Wrap vertically
+          const neighbourCol = (col + j + cols) % cols; // Wrap horizontally
+          aliveNeighbours += grid[neighbourRow][neighbourCol];
         }
       }
+      // Apply the rules of the Game of Life
       if (grid[row][col] === 1) {
         newGrid[row][col] =
           aliveNeighbours === 2 || aliveNeighbours === 3 ? 1 : 0;
@@ -95,7 +98,8 @@ function clearGrid() {
 let intervalId;
 
 const startButton = document.getElementById("startButton");
-startButton.addEventListener("click", () => {
+
+function toggleInterval() {
   if (intervalId) {
     clearInterval(intervalId);
     intervalId = null;
@@ -104,7 +108,9 @@ startButton.addEventListener("click", () => {
     intervalId = setInterval(nextGeneration, intervalTime);
     startButton.textContent = "Stop";
   }
-});
+}
+
+startButton.addEventListener("click", toggleInterval);
 
 const resetButton = document.getElementById("resetButton");
 resetButton.addEventListener("click", () => {
@@ -174,4 +180,28 @@ canvas.addEventListener("mouseup", () => {
 
 canvas.addEventListener("mouseleave", () => {
   isMouseDown = false;
+});
+
+document.addEventListener("keydown", (e) => {
+  if (event.code === "Space" || event.key === " ") {
+    e.preventDefault();
+    toggleInterval();
+  }
+});
+
+const speedValueSlider = document.getElementById("speedValueSlider");
+const speedValue = document.getElementById("speedValue");
+
+function setSpeed(speed) {
+  intervalTime = 100 / speed;
+}
+
+speedValueSlider.addEventListener("input", () => {
+  setSpeed(speedValueSlider.value);
+  speedValue.value = speedValueSlider.value;
+});
+
+speedValue.addEventListener("input", () => {
+  setSpeed(speedValue.value);
+  speedValueSlider.value = speedValue.value;
 });

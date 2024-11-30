@@ -9,7 +9,7 @@
   </head>
   <body class="bg-background">
     <div class="flex flex-col items-center">
-      <div class="flex items-center justify-evenly w-full gap-2 my-2">
+      <div class="flex items-center justify-evenly w-full gap-2 m-0 p-0">
         <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"><h1 class="font-extrabold text-[50px]">Game Of Life</h1></a>
         <div class="flex gap-2 items-center">
           <button
@@ -54,32 +54,13 @@
               />
             </div>
           </div>
-          <div class="flex gap-1 items-center">
-      <div class="flex flex-col items-center">
-              <label for="speedValueSlider">Speed</label>
-              <input
-                type="range"
-                min="1"
-                max="20"
-                step="0.5"
-                value="10"
-                class="slider"
-                id="speedValueSlider"
-              />
-              <input
-                type="number"
-                class="text-black px-1"
-                name="speedValue"
-                id="speedValue"
-                value="10"
-                min="1"
-                max="20"
-                step="2,5"
-              />
-            </div>
-          </div>
+          <!-- :w -->
         </div>
         <a href="https://github.com/Mammamu4/Game-Of-life" target="_blank"><img src="svgs/github-mark.svg" width="50"  alt="github logo to open source repository of game of life"></img></a>
+      </div>
+      <div class="flex m-0 p-0 gap-2">
+       <p>Total Generations: <span class="text-primary" id="totalGenerations">0</span></p> 
+       <p>Population: <span class="text-primary" id="population">0</span></p> 
       </div>
       <canvas id="gridCavas" class="w-full"></canvas>
     </div>

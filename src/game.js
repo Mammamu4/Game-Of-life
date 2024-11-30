@@ -4,7 +4,12 @@ const ctx = canvas.getContext("2d");
 const cellSize = 50;
 const rows = 50;
 const cols = 100;
-let intervalTime = 10; //game will update every 100 ms
+let intervalTime = 25; //game will update every 100 ms
+
+let totalGenerations = 0;
+let population = 0;
+const populationText = document.getElementById("population");
+const totalGenerationsText = document.getElementById("totalGenerations");
 
 const root = document.documentElement;
 const primaryColor = getComputedStyle(root)
@@ -23,6 +28,7 @@ grid[27][50] = 1;
 grid[27][51] = 1;
 
 function drawGrid() {
+  population = 0;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
@@ -34,16 +40,21 @@ function drawGrid() {
       drawRoundedRect(x, y, cellSize, cellSize, 5);
       //ctx.rect(x, y, cellSize, cellSize)
 
-      // Dynamic fill color based on grid state
-      ctx.fillStyle = grid[row][col] ? `rgb(${primaryColor})` : "white";
+      if (grid[row][col] === 1) {
+        population += 1;
+        ctx.fillStyle = `rgb(${primaryColor})`;
+      } else {
+        ctx.fillStyle = `white`;
+      }
       ctx.fill();
-
       // Apply border styling
       ctx.strokeStyle = "black";
       ctx.lineWidth = 1;
       ctx.stroke();
     }
   }
+  populationText.textContent = population;
+  totalGenerationsText.textContent = totalGenerations;
 }
 
 // Helper function for rounded rectangles
@@ -60,6 +71,7 @@ function drawRoundedRect(x, y, width, height, radius) {
 drawGrid();
 
 function nextGeneration() {
+  totalGenerations += 1;
   const newGrid = [];
   for (let row = 0; row < rows; row++) {
     newGrid[row] = [];
@@ -92,6 +104,7 @@ function clearGrid() {
       grid[i][j] = 0;
     }
   }
+  totalGenerations = 0;
   drawGrid();
 }
 
@@ -189,19 +202,20 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-const speedValueSlider = document.getElementById("speedValueSlider");
-const speedValue = document.getElementById("speedValue");
+// const speedValueSlider = document.getElementById("speedValueSlider");
+// const speedValue = document.getElementById("speedValue");
 
-function setSpeed(speed) {
-  intervalTime = 100 / speed;
-}
+// function setSpeed(speed) {
+//   // Map the speed (1-100) to a time interval (10 ms to 1000 ms)
+//   intervalTime = Math.max(1000 - speed * 20, 10); // Ensure the interval is at least 10ms
+// }
+// setSpeed(speedValue.value);
+// speedValueSlider.addEventListener("input", () => {
+//   setSpeed(speedValueSlider.value);
+//   speedValue.value = speedValueSlider.value;
+// });
 
-speedValueSlider.addEventListener("input", () => {
-  setSpeed(speedValueSlider.value);
-  speedValue.value = speedValueSlider.value;
-});
-
-speedValue.addEventListener("input", () => {
-  setSpeed(speedValue.value);
-  speedValueSlider.value = speedValue.value;
-});
+// speedValue.addEventListener("input", () => {
+//   setSpeed(speedValue.value);
+//   speedValueSlider.value = speedValue.value;
+// });

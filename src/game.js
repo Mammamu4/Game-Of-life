@@ -1,20 +1,19 @@
 const canvas = document.getElementById("gridCavas");
 const ctx = canvas.getContext("2d");
 
+const cellSize = 50;
 const rows = 50;
-const cols = 50;
-const cellSize = 20;
-const intervalTime = 100; //game will update every 100 ms
+const cols = 100;
+const intervalTime = 10; //game will update every 100 ms
+
+const root = document.documentElement;
+const primaryColor = getComputedStyle(root).getPropertyValue('--primary').trim();
+console.log('Primary Color:', primaryColor);
 
 canvas.width = cols * cellSize;
 canvas.height = rows * cellSize;
 
 let grid = Array.from({ length: rows }, () => Array(cols).fill(0));
-
-grid[10][10] = 1;
-grid[11][10] = 1;
-grid[9][10] = 1;
-grid[10][11] = 1;
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -23,13 +22,32 @@ function drawGrid() {
       ctx.beginPath();
       const x = col * cellSize;
       const y = row * cellSize;
-      ctx.rect(x, y, cellSize, cellSize);
-      ctx.fillStyle = grid[row][col] ? "black" : "white";
+
+      // Apply rounded rectangles
+      drawRoundedRect(x, y, cellSize, cellSize, 5);
+      //ctx.rect(x, y, cellSize, cellSize)
+
+      // Dynamic fill color based on grid state
+      ctx.fillStyle = grid[row][col] ? `rgb(${primaryColor})` : "white";
       ctx.fill();
+
+      // Apply border styling
       ctx.strokeStyle = "black";
+      ctx.lineWidth = 1;
       ctx.stroke();
     }
   }
+}
+
+// Helper function for rounded rectangles
+function drawRoundedRect(x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
 }
 
 drawGrid();
@@ -83,7 +101,7 @@ startButton.addEventListener("click", () => {
     intervalId = null;
     startButton.textContent = "Start";
   } else {
-    intervalId = setInterval(nextGeneration, 100);
+    intervalId = setInterval(nextGeneration, intervalTime);
     startButton.textContent = "Stop";
   }
 });

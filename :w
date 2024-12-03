@@ -10,7 +10,7 @@
   <body class="bg-background">
     <div class="flex flex-col items-center">
       <div class="flex items-center justify-evenly w-full gap-2 m-0 p-0">
-        <a href="../"><img src="svgs/home.svg" alt="Home Icon" width=48 height=48></a>
+        <a href="../"><img src="svgs/home.svg" alt="Home Icon"></a>
         <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"><h1 class="font-extrabold text-[50px]">Game Of Life</h1></a>
         <div class="flex gap-2 items-center">
           <button
@@ -65,6 +65,6 @@
       </div>
       <canvas id="gridCavas" class="w-full"></canvas>
     </div>
-    <script src="game2.js"></script>
+    <script src="game.js"></script>
   </body>
 </html>

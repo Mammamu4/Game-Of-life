@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>John Conways Game Of Life</title>
-    <link href="styles.css" rel="stylesheet" />
-    <link href="./output.css" rel="stylesheet" />
+    <link href="/life/styles.css" rel="stylesheet" />
+    <link href="/life/output.css" rel="stylesheet" />
   </head>
   <body class="bg-background">
     <div class="flex flex-col items-center">
       <div class="flex items-center justify-evenly w-full gap-2 m-0 p-0">
-        <a href="../"><img src="svgs/home.svg" alt="Home Icon" width=48 height=48></a>
+        <a href="../"><img src="/life/svgs/home.svg" alt="Home Icon" width=48 height=48></a>
         <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"><h1 class="font-extrabold text-[50px]">Game Of Life</h1></a>
         <div class="flex gap-2 items-center">
           <button
@@ -57,7 +57,7 @@
           </div>
           <!-- :w -->
         </div>
-        <a href="https://github.com/Mammamu4/Game-Of-life" target="_blank"><img src="svgs/github-mark.svg" width="50"  alt="github logo to open source repository of game of life"></img></a>
+        <a href="https://github.com/Mammamu4/Game-Of-life" target="_blank"><img src="/life/svgs/github-mark.svg" width="50"  alt="github logo to open source repository of game of life"></img></a>
       </div>
       <div class="flex m-0 p-0 gap-2">
        <p>Total Generations: <span class="text-primary" id="totalGenerations">0</span></p> 
@@ -65,6 +65,6 @@
       </div>
       <canvas id="gridCavas" class="w-full"></canvas>
     </div>
-    <script src="game.js"></script>
+    <script src="/life/game.js"></script>
   </body>
 </html>

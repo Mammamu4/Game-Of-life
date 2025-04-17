@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d");
 const cellSize = 50;
 const rows = 50;
 const cols = 100;
-let intervalTime = 25; //game will update every 100 ms
+let intervalTime = 10; // game will update every n ms
 
 let totalGenerations = 0;
 let population = 0;
@@ -21,62 +21,55 @@ canvas.height = rows * cellSize;
 
 let grid = Array.from({ length: rows }, () => Array(cols).fill(0));
 
+// Initial glider setup
 grid[25][50] = 1;
 grid[26][50] = 1;
 grid[26][49] = 1;
 grid[27][50] = 1;
 grid[27][51] = 1;
 
+const offscreenCanvas = document.createElement("canvas");
+const offscreenCtx = offscreenCanvas.getContext("2d");
+offscreenCanvas.width = canvas.width;
+offscreenCanvas.height = canvas.height;
+
 function drawGrid() {
   population = 0;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height); // Clear entire canvas
+
+  // Loop through each cell and render it on the offscreen canvas
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      ctx.beginPath();
       const x = col * cellSize;
       const y = row * cellSize;
 
-      // Apply rounded rectangles
-      drawRoundedRect(x, y, cellSize, cellSize, 5);
-      //ctx.rect(x, y, cellSize, cellSize)
-
       if (grid[row][col] === 1) {
         population += 1;
-        ctx.fillStyle = `rgb(${primaryColor})`;
+        offscreenCtx.fillStyle = `rgb(${primaryColor})`;
+        offscreenCtx.fillRect(x, y, cellSize, cellSize); // Draw filled cell for alive state
       } else {
-        ctx.fillStyle = `white`;
+        offscreenCtx.fillStyle = "white";
+        offscreenCtx.fillRect(x, y, cellSize, cellSize); // Draw filled cell for dead state (white)
       }
-      ctx.fill();
-      // Apply border styling
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 1;
-      ctx.stroke();
     }
   }
+
+  // Update population and generations text
   populationText.textContent = population;
   totalGenerationsText.textContent = totalGenerations;
-}
 
-// Helper function for rounded rectangles
-function drawRoundedRect(x, y, width, height, radius) {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.arcTo(x + width, y, x + width, y + height, radius);
-  ctx.arcTo(x + width, y + height, x, y + height, radius);
-  ctx.arcTo(x, y + height, x, y, radius);
-  ctx.arcTo(x, y, x + width, y, radius);
-  ctx.closePath();
+  // Copy the offscreen canvas to the main canvas
+  ctx.drawImage(offscreenCanvas, 0, 0);
 }
-
-drawGrid();
 
 function nextGeneration() {
   totalGenerations += 1;
-  const newGrid = [];
+  const newGrid = Array.from({ length: rows }, () => Array(cols).fill(0));
+
   for (let row = 0; row < rows; row++) {
-    newGrid[row] = [];
     for (let col = 0; col < cols; col++) {
       let aliveNeighbours = 0;
+
       for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
           if (i === 0 && j === 0) continue; // Skip the current cell
@@ -85,6 +78,7 @@ function nextGeneration() {
           aliveNeighbours += grid[neighbourRow][neighbourCol];
         }
       }
+
       // Apply the rules of the Game of Life
       if (grid[row][col] === 1) {
         newGrid[row][col] =
@@ -94,22 +88,18 @@ function nextGeneration() {
       }
     }
   }
+
   grid = newGrid;
   drawGrid();
 }
 
 function clearGrid() {
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      grid[i][j] = 0;
-    }
-  }
+  grid = Array.from({ length: rows }, () => Array(cols).fill(0));
   totalGenerations = 0;
   drawGrid();
 }
 
 let intervalId;
-
 const startButton = document.getElementById("startButton");
 
 function toggleInterval() {
@@ -126,9 +116,7 @@ function toggleInterval() {
 startButton.addEventListener("click", toggleInterval);
 
 const resetButton = document.getElementById("resetButton");
-resetButton.addEventListener("click", () => {
-  clearGrid();
-});
+resetButton.addEventListener("click", clearGrid);
 
 const randomValueSlider = document.getElementById("randomValueSlider");
 const randomValue = document.getElementById("randomValue");
@@ -145,20 +133,20 @@ const randomizeButton = document.getElementById("randomizeButton");
 randomizeButton.addEventListener("click", () => {
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      let val = document.getElementById("randomValueSlider").value;
+      let val = randomValueSlider.value;
       grid[row][col] = Math.random() < val ? 1 : 0;
     }
   }
   drawGrid();
 });
 
-let isMouseDown = false; // Track if the mouse is down
+let isMouseDown = false;
+const rect = canvas.getBoundingClientRect();
+const scaleX = canvas.width / rect.width;
+const scaleY = canvas.height / rect.height;
 
 canvas.addEventListener("mousedown", (event) => {
   isMouseDown = true;
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
   const x = (event.clientX - rect.left) * scaleX;
   const y = (event.clientY - rect.top) * scaleY;
 
@@ -172,9 +160,6 @@ canvas.addEventListener("mousedown", (event) => {
 
 canvas.addEventListener("mousemove", (event) => {
   if (isMouseDown) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width; // Scale factor for x coordinates
-    const scaleY = canvas.height / rect.height; // Scale factor for y coordinates
     const x = (event.clientX - rect.left) * scaleX;
     const y = (event.clientY - rect.top) * scaleY;
 
@@ -196,26 +181,13 @@ canvas.addEventListener("mouseleave", () => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (event.code === "Space" || event.key === " ") {
+  if (e.code === "Space" || e.key === " ") {
     e.preventDefault();
     toggleInterval();
+  } else if (e.key === "r" || e.key("R")){
+    clearGrid();
+    drawGrid();
   }
+
 });
-
-// const speedValueSlider = document.getElementById("speedValueSlider");
-// const speedValue = document.getElementById("speedValue");
-
-// function setSpeed(speed) {
-//   // Map the speed (1-100) to a time interval (10 ms to 1000 ms)
-//   intervalTime = Math.max(1000 - speed * 20, 10); // Ensure the interval is at least 10ms
-// }
-// setSpeed(speedValue.value);
-// speedValueSlider.addEventListener("input", () => {
-//   setSpeed(speedValueSlider.value);
-//   speedValue.value = speedValueSlider.value;
-// });
-
-// speedValue.addEventListener("input", () => {
-//   setSpeed(speedValue.value);
-//   speedValueSlider.value = speedValue.value;
-// });
+drawGrid();
